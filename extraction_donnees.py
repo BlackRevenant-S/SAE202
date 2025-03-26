@@ -31,5 +31,8 @@ for station in stations_data:
         fill_opacity=0.6
     ).add_to(m)
 
+coords = np.array([[s['lat'], s['lon']] for s in stations_data])
+tri = Delaunay(coords)
+
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')

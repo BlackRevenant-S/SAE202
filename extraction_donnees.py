@@ -21,10 +21,9 @@ m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 
 # Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
 for station in stations_data:
-    normalized_radius = (station['capacity'] / max_capacity) * 10  # Rayon max = 10
     folium.CircleMarker(
         location=[station['lat'], station['lon']],
-        radius=normalized_radius,
+        radius=station['capacity'] // 4,
         color='blue',
         weight=1,
         fill=True,

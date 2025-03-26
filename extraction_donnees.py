@@ -9,24 +9,27 @@ from scipy.spatial.distance import cdist
 json_file = "station_information.json"
 with open(json_file, 'r', encoding='UTF-8') as file:
     velib = json.load(file)
+
 # Extraire de la structure JSON les informations des stations
 stations_data = velib['data']['stations']
 
+# Trouver la capacité max pour normaliser les tailles
+max_capacity = max(station['capacity'] for station in stations_data)
+
 # Créer une carte centrée sur Paris
 m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
-# Ajouter des marqueurs pour chaque station
+
+# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
 for station in stations_data:
     folium.CircleMarker(
-    location=[station['lat'], station['lon']],
-    radius=station['capacity'] // 4,
-    color='blue',
-    weight=1,
-    fill=True,
-    fill_color='blue'
+        location=[station['lat'], station['lon']],
+        radius=station['capacity'] // 4,
+        color='blue',
+        weight=1,
+        fill=True,
+        fill_color='blue',
+        fill_opacity=0.6
     ).add_to(m)
-
-coords = np.array([[s['lat'], s['lon']] for s in stations_data])
-tri = Delaunay(coords)
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')

@@ -18,11 +18,15 @@ m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 for station in stations_data:
     folium.CircleMarker(
     location=[station['lat'], station['lon']],
-    radius=station['capacity']//4,
+    radius=station['capacity'] // 4,
     color='blue',
     weight=1,
     fill=True,
     fill_color='blue'
     ).add_to(m)
+
+coords = np.array([[s['lat'], s['lon']] for s in stations_data])
+tri = Delaunay(coords)
+
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')

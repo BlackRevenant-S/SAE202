@@ -4,6 +4,8 @@ from folium.plugins import MarkerCluster
 import numpy as np
 from scipy.spatial import Delaunay
 from scipy.spatial.distance import cdist
+from collections import defaultdict
+
 
 # Lire les données des stations depuis un fichier JSON
 json_file = "station_information.json"
@@ -40,7 +42,31 @@ for simplex in tri.simplices:
     co = triangle.tolist() + [triangle[0].tolist()]
     folium.PolyLine(co, color="red", weight=2.5).add_to(m)
 
-    
+
+# Initialiser la liste d'adjacence
+liste_adjacence = defaultdict(set)  # set pour enlever tout les doublons
+
+# Traduit les indice utilisés dans tri.simplices en IDs de stations
+index_to_id = [station['station_id'] for station in stations_data]
+
+for simplex in tri.simplices:
+    for i in range(3):
+        for j in range(i + 1, 3):
+            a, b = simplex[i], simplex[j]
+            id_a = index_to_id[a]
+            id_b = index_to_id[b]
+
+            # Ajouter la connexion dans les deux sens (graphe non orienté)
+            liste_adjacence[id_a].add(id_b)
+            liste_adjacence[id_b].add(id_a)
+
+# Convertir les ensembles en listes
+liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
+
+print(liste_adjacence)
+
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
+
+

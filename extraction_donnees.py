@@ -32,7 +32,15 @@ for station in stations_data:
     ).add_to(m)
 
 coords = np.array([[s['lat'], s['lon']] for s in stations_data])
+
 tri = Delaunay(coords)
+for simplex in tri.simplices:
+    triangle = coords[simplex]
+    # On boucle pour fermer le triangle
+    co = triangle.tolist() + [triangle[0].tolist()]
+    folium.PolyLine(co, color="red", weight=2.5).add_to(m)
+
+    
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')

@@ -93,7 +93,6 @@ for simplex in tri.simplices:
     co = triangle.tolist() + [triangle[0].tolist()]
     folium.PolyLine(co, color="red", weight=2.5).add_to(m)
 
-    
 
 # Initialiser la liste d'adjacence
 liste_adjacence = defaultdict(set)  # set pour enlever tout les doublons
@@ -135,6 +134,7 @@ f.close()
 #
 # Pour le reseau electrique (donc l'arbre de poid minimum)
 # regarder la page 17 de SAE2.02-Présentation.pdf# regarder la page 17 de SAE2.02-Présentation.pdf
+# regarder la page 17 de SAE2.02-Présentation.pdf
 =======
 
 >>>>>>> 7fbd12d4d864f1ca36dd64cdcdecf244c1ff7a76

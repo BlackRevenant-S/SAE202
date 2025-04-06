@@ -13,12 +13,14 @@ with open(json_file, 'r', encoding='UTF-8') as file:
 # Extraire de la structure JSON les informations des stations
 stations_data = velib['data']['stations']
 
-# Trouver la capacité max pour normaliser les tailles
+# Trouver la capacite max pour normaliser les tailles
 max_capacity = max(station['capacity'] for station in stations_data)
 
 # Créer une carte centrée sur Paris
 m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 
+
+# Legende qui sera ajouté a la fin du fichier html
 legend = """
 <html>
     <legend>
@@ -72,11 +74,19 @@ for station in stations_data:
         fill_opacity=0.6
     ).add_to(m)
 
+#
+
 coords = np.array([[s['lat'], s['lon']] for s in stations_data])
 
+# Utilisation de Delaunay
+
 tri = Delaunay(coords)
+
+# Tracement des lignes
+
 for simplex in tri.simplices:
     triangle = coords[simplex]
+
     # On boucle pour fermer le triangle
     co = triangle.tolist() + [triangle[0].tolist()]
     folium.PolyLine(co, color="red", weight=2.5).add_to(m)
@@ -86,6 +96,16 @@ for simplex in tri.simplices:
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
 
+# ajout de la legende
+
 f = open("velib_stations_map.html", "a")
 f.write(legend)
 f.close()
+
+
+
+
+# !!! IMPORTANT !!!
+#
+# Pour le reseau electrique (donc l'arbre de poid minimum)
+# regarder la page 17 de SAE2.02-Présentation.pdf

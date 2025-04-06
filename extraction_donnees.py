@@ -114,7 +114,8 @@ for simplex in tri.simplices:
 # Convertir les ensembles en listes
 liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
 
-print(liste_adjacence)
+# debugging 
+# print(liste_adjacence)
 
 
 # Sauvegarder la carte dans un fichier HTML

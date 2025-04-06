@@ -120,7 +120,7 @@ print(liste_adjacence)
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
 
-<<<<<<< HEAD
+
 # ajout de la legende
 
 f = open("velib_stations_map.html", "a")
@@ -133,8 +133,4 @@ f.close()
 # !!! IMPORTANT !!!
 #
 # Pour le reseau electrique (donc l'arbre de poid minimum)
-# regarder la page 17 de SAE2.02-Présentation.pdf# regarder la page 17 de SAE2.02-Présentation.pdf
 # regarder la page 17 de SAE2.02-Présentation.pdf
-=======
-
->>>>>>> 7fbd12d4d864f1ca36dd64cdcdecf244c1ff7a76

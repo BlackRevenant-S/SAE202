@@ -19,6 +19,47 @@ max_capacity = max(station['capacity'] for station in stations_data)
 # Créer une carte centrée sur Paris
 m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 
+legend = """
+<html>
+    <legend>
+
+        <img src="img/trait rouge.png" alt="trait rouge" width="60" height="30">
+        <p>
+            : Trait Delaunay
+        </p>
+            <br>
+        <img src="img/point bleu.png" alt="point bleu" width="36" height="30">
+
+        <p>
+            : Station Velib
+        </p>
+
+    
+
+    </legend>
+
+    <style>
+        legend{
+            position: fixed;
+            bottom: 0px;
+            left: 6px;
+            width: 300px;
+            background-color: white;
+            z-index:999;
+            border:solid;
+            border-color: rgb(0, 0, 0);
+            border-width: 3 px;   
+        }
+
+        img,p{
+            display:inline;
+            margin: 10px;
+        }
+            </style>
+
+<html>
+    """
+
 # Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
 for station in stations_data:
     folium.CircleMarker(
@@ -44,3 +85,7 @@ for simplex in tri.simplices:
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
+
+f = open("velib_stations_map.html", "a")
+f.write(legend)
+f.close()

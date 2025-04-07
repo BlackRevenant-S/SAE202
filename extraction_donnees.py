@@ -23,6 +23,28 @@ m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 
 
 
+# Obtention des coordonnées de chaque station (en liste)
+
+coords = np.array([[s['lat'], s['lon']] for s in stations_data])
+
+
+# Utilisation de Delaunay
+
+tri = Delaunay(coords)
+
+
+# Calculer le degré de chaque sommet (nombre d'arretes d'un sommet)
+degrees = np.zeros(len(stations_data))
+for simplex in tri.simplices:
+    for vertex in simplex:
+        degrees[vertex] += 1
+
+
+# formule de l'indice de répartition 
+# n_v : nombre de stations voisines
+# c : capacité de la station
+# a : facteur de ponderation (a appartient a [0,1] )
+
 def indice_repartition(n_v,c,a):
     if n_v == 6:
         return 0
@@ -32,59 +54,8 @@ def indice_repartition(n_v,c,a):
 
 
 
-    
-# Calculer le degré de chaque sommet
-degrees = np.zeros(len(stations_data))
-for simplex in tri.simplices:
-    for vertex in simplex:
-        degrees[vertex] += 1
+# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
 
-
-
-
-# Legende qui sera ajouté a la fin du fichier html
-legend = """
-<html>
-    <legend>
-
-        <img src="img/trait rouge.png" alt="trait rouge" width="60" height="30">
-        <p>
-            : Trait Delaunay
-        </p>
-            <br>
-        <img src="img/point bleu.png" alt="point bleu" width="36" height="30">
-
-        <p>
-            : Station Velib
-        </p>
-
-    
-
-    </legend>
-
-    <style>
-        legend{
-            position: fixed;
-            bottom: 0px;
-            left: 6px;
-            width: 300px;
-            background-color: white;
-            z-index:999;
-            border:solid;
-            border-color: rgb(0, 0, 0);
-            border-width: 3 px;   
-        }
-
-        img,p{
-            display:inline;
-            margin: 10px;
-        }
-            </style>
-
-<html>
-    """
-
-    # Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
 for i, station in enumerate(stations_data):
     indice = indice_repartition(degrees[i], station['capacity'], 0.5)
     folium.CircleMarker(
@@ -98,13 +69,6 @@ for i, station in enumerate(stations_data):
         popup=f"Indice: {indice:.2f}"
     ).add_to(m)
 
-#
-
-coords = np.array([[s['lat'], s['lon']] for s in stations_data])
-
-# Utilisation de Delaunay
-
-tri = Delaunay(coords)
 
 # Tracement des lignes
 
@@ -160,6 +124,54 @@ liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
+
+
+
+
+
+# Legende qui sera ajouté a la fin du fichier html
+legend = """
+<html>
+    <legend>
+
+        <img src="img/trait rouge.png" alt="trait rouge" width="60" height="30">
+        <p>
+            : Trait Delaunay
+        </p>
+            <br>
+        <img src="img/point bleu.png" alt="point bleu" width="36" height="30">
+
+        <p>
+            : Station Velib
+        </p>
+
+    
+
+    </legend>
+
+    <style>
+        legend{
+            position: fixed;
+            bottom: 0px;
+            left: 6px;
+            width: 300px;
+            background-color: white;
+            z-index:999;
+            border:solid;
+            border-color: rgb(0, 0, 0);
+            border-width: 3 px;   
+        }
+
+        img,p{
+            display:inline;
+            margin: 10px;
+        }
+            </style>
+
+<html>
+    """
+
+
 
 # ajout de la legende !! TOUJOUR EN DERNIER
 f = open("velib_stations_map.html", "a")

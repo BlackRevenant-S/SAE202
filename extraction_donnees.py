@@ -22,6 +22,26 @@ max_capacity = max(station['capacity'] for station in stations_data)
 m = folium.Map(location=[48.8566, 2.3522], zoom_start=11)
 
 
+
+def indice_repartition(n_v,c,a):
+    if n_v == 6:
+        return 0
+    else:
+        return a * ((n_v - 6) / 6) + (1 - a) * ((max_capacity - c) / max_capacity)
+    
+
+
+
+    
+# Calculer le degré de chaque sommet
+degrees = np.zeros(len(stations_data))
+for simplex in tri.simplices:
+    for vertex in simplex:
+        degrees[vertex] += 1
+
+
+
+
 # Legende qui sera ajouté a la fin du fichier html
 legend = """
 <html>
@@ -64,8 +84,9 @@ legend = """
 <html>
     """
 
-# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
-for station in stations_data:
+    # Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
+for i, station in enumerate(stations_data):
+    indice = indice_repartition(degrees[i], station['capacity'], 0.5)
     folium.CircleMarker(
         location=[station['lat'], station['lon']],
         radius=station['capacity'] // 4,
@@ -73,7 +94,8 @@ for station in stations_data:
         weight=1,
         fill=True,
         fill_color='blue',
-        fill_opacity=0.6
+        fill_opacity=0.6,
+        popup=f"Indice: {indice:.2f}"
     ).add_to(m)
 
 #
@@ -114,24 +136,32 @@ for simplex in tri.simplices:
 # Convertir les ensembles en listes
 liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
 
-# debugging 
+# debugging # 
 # print(liste_adjacence)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
 
-
-# ajout de la legende
-
+# ajout de la legende !! TOUJOUR EN DERNIER
 f = open("velib_stations_map.html", "a")
 f.write(legend)
 f.close()
-
-
-
-
-# !!! IMPORTANT !!!
-#
-# Pour le reseau electrique (donc l'arbre de poid minimum)
-# regarder la page 17 de SAE2.02-Présentation.pdf

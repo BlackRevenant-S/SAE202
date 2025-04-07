@@ -48,8 +48,6 @@ for simplex in tri.simplices:
 # n_v : nombre de stations voisines
 # c : capacité de la station
 # a : facteur de ponderation (a appartient a [0,1] )
-
-    
     
 
 def indice_repartition(n_v,c,a):
@@ -58,8 +56,6 @@ def indice_repartition(n_v,c,a):
     else:
         return a * ((n_v - 6) / 6) + (1 - a) * ((max_capacity - c) / max_capacity)
     
-
-
     
 
 
@@ -114,8 +110,6 @@ for i, station in enumerate(stations_data):
         fill_opacity=1,
         popup=f"Indice: {indice:.2f}"
     ).add_to(m)
-
-0.77192982456 
 
 # Initialiser la liste d'adjacence
 liste_adjacence = defaultdict(set)  # set pour enlever tout les doublons

@@ -6,6 +6,10 @@ from scipy.spatial import Delaunay
 from scipy.spatial.distance import cdist
 from collections import defaultdict
 
+maximum_indice = 0.7017543859649122
+minimum_indice = -0.07017543859649122
+
+indice_total = 0.77192982456 
 
 # Lire les données des stations depuis un fichier JSON
 json_file = "station_information.json"
@@ -45,6 +49,9 @@ for simplex in tri.simplices:
 # c : capacité de la station
 # a : facteur de ponderation (a appartient a [0,1] )
 
+    
+    
+
 def indice_repartition(n_v,c,a):
     if n_v == 6:
         return 0
@@ -53,21 +60,7 @@ def indice_repartition(n_v,c,a):
     
 
 
-
-# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
-
-for i, station in enumerate(stations_data):
-    indice = indice_repartition(degrees[i], station['capacity'], 0.5)
-    folium.CircleMarker(
-        location=[station['lat'], station['lon']],
-        radius=station['capacity'] // 4,
-        color='blue',
-        weight=1,
-        fill=True,
-        fill_color='blue',
-        fill_opacity=0.6,
-        popup=f"Indice: {indice:.2f}"
-    ).add_to(m)
+    
 
 
 # Tracement des lignes
@@ -79,6 +72,50 @@ for simplex in tri.simplices:
     co = triangle.tolist() + [triangle[0].tolist()]
     folium.PolyLine(co, color="red", weight=2.5).add_to(m)
 
+
+# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
+
+for i, station in enumerate(stations_data):
+    indice = indice_repartition(degrees[i], station['capacity'], 0.5)
+
+    h = 0
+    red = 255
+    green = 120
+
+    if indice < 0:
+            red = 255
+            green = 0
+
+
+    else: 
+        while indice > h:
+            h = h + indice_total/(510 - 120)
+        
+            if green == 255:
+           
+                red = red -1
+
+            else:
+                green = green +1
+            
+        
+    
+   
+
+    couleur = 'rgb('+str(red)+','+str(green)+',0)'
+
+    folium.CircleMarker(
+        location=[station['lat'], station['lon']],
+        radius=station['capacity'] // 4,
+        weight=1,
+        color='black',
+        fill=True,
+        fill_color= couleur,
+        fill_opacity=1,
+        popup=f"Indice: {indice:.2f}"
+    ).add_to(m)
+
+0.77192982456 
 
 # Initialiser la liste d'adjacence
 liste_adjacence = defaultdict(set)  # set pour enlever tout les doublons
@@ -102,20 +139,6 @@ liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
 
 # debugging # 
 # print(liste_adjacence)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -142,25 +142,40 @@ liste_adjacence = {k: list(v) for k, v in liste_adjacence.items()}
 # Sauvegarder la carte dans un fichier HTML
 m.save('velib_stations_map.html')
 
-
-
-
-
 # Legende qui sera ajouté a la fin du fichier html
 legend = """
 <html>
     <legend>
 
+        <img src="img/station.png" alt="cercle noir" width="45" height="45">
+        <p>
+            : Station velib
+        </p>
+        <br>
+    
+        <section>
+        <img src="img/spectre.png" alt="spectre" width="100" height="30">
+
+    
+            <p>
+                : Vert = station en surdistribution 
+            </p>
+            <p id="lineup">
+                Rouge = station en sous distribution
+            </p>
+            <br>
+            
+
+        </section>
+            
         <img src="img/trait rouge.png" alt="trait rouge" width="60" height="30">
         <p>
-            : Trait Delaunay
+            : Trait de la fonction Delaunay
         </p>
-            <br>
-        <img src="img/point bleu.png" alt="point bleu" width="36" height="30">
+        <br>
 
-        <p>
-            : Station Velib
-        </p>
+
+        
 
     
 
@@ -171,19 +186,27 @@ legend = """
             position: fixed;
             bottom: 0px;
             left: 6px;
-            width: 300px;
+            width: 400px;
             background-color: white;
             z-index:999;
             border:solid;
             border-color: rgb(0, 0, 0);
             border-width: 3 px;   
         }
-
+        
+        
+        
         img,p{
             display:inline;
             margin: 10px;
         }
-            </style>
+
+        #lineup{
+            position:relative;
+            left:120px;
+        }
+
+     </style>
 
 <html>
     """

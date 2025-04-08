@@ -23,7 +23,7 @@ with open(json_file, 'r', encoding='UTF-8') as file:
 # Extraire de la structure JSON les informations des stations
 stations_data = velib['data']['stations']
 
-# Trouver la capacite max pour normaliser les tailles
+# Trouver la capacité max pour normaliser les tailles
 max_capacity = max(station['capacity'] for station in stations_data)
 
 # Créer une carte centrée sur Paris
@@ -50,39 +50,9 @@ def indice_repartition(n_v,c,a):
 
 coords = np.array([[s['lat'], s['lon']] for s in stations_data])
 
-
-# Utilisation de Delaunay
-
 tri = Delaunay(coords)
-
-
-# Calculer le degré de chaque sommet (nombre d'arretes d'un sommet)
-degrees = np.zeros(len(stations_data))
-for simplex in tri.simplices:
-    for vertex in simplex:
-        degrees[vertex] += 1
-
-
-# formule de l'indice de répartition 
-# n_v : nombre de stations voisines
-# c : capacité de la station
-# a : facteur de ponderation (a appartient a [0,1] )
-    
-
-def indice_repartition(n_v,c,a):
-    if n_v == 6:
-        return 0
-    else:
-        return a * ((n_v - 6) / 6) + (1 - a) * ((max_capacity - c) / max_capacity)
-    
-    
-
-
-# Tracement des lignes
-
 for simplex in tri.simplices:
     triangle = coords[simplex]
-
     # On boucle pour fermer le triangle
     co = triangle.tolist() + [triangle[0].tolist()]
     folium.PolyLine(co, color="red", weight=2.5).add_to(m)
@@ -93,7 +63,7 @@ for simplex in tri.simplices:
     for vertex in simplex:
         degrees[vertex] += 1
 
-# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité
+# Ajouter des marqueurs pour chaque station avec un rayon proportionnel à la capacité et faire un dégradé de couleur en fonction de l'indice de répartition
 
 for i, station in enumerate(stations_data):
     indice = indice_repartition(degrees[i], station['capacity'], 0.5)
@@ -161,7 +131,7 @@ for simplex in tri.simplices:
             liste_adjacence[id_b][id_a] = distance
 
 # test
-for station, voisins in list(liste_adjacence.items())[:5]:
+for station, voisins in list(liste_adjacence.items())[:15]:
     print(f"{station} :")
     for voisin, distance in voisins.items():
         print(f"    -> {voisin} ({distance:.4f})")
@@ -226,13 +196,43 @@ print(f"Coût total de l’arbre couvrant minimal : {total_cost:.4f}")
 points = np.array([[s['lon'], s['lat']] for s in stations_data])
 vor = Voronoi(points)
 
-# Dessiner les cellules de Voronoï
-for ridge_vertices in vor.ridge_vertices:
-    if -1 not in ridge_vertices:  # on ignore les arêtes infinies
-        points = [vor.vertices[i] for i in ridge_vertices]
-        # Repasser les coordonnées en (lat, lon) pour Folium
-        points_latlon = [[lat, lon] for lon, lat in points]
-        folium.PolyLine(points_latlon, color="orange", weight=1.5, opacity=0.7).add_to(m)
+# Colorier les cellules de Voronoï avec la couleur de la station associée
+for i, region_index in enumerate(vor.point_region):
+    region = vor.regions[region_index]
+    if not -1 in region and len(region) > 0:
+        polygon = [vor.vertices[j] for j in region]
+        poly_latlon = [[pt[1], pt[0]] for pt in polygon]  # inversion pour Folium (lat, lon)
+
+        # Récupération station associée
+        station = stations_data[i]
+        deg = degrees[i]
+        capacite = station['capacity']
+
+        # Calcul couleur (identique à celui des cercles)
+        indice = indice_repartition(deg, capacite, 0.5)
+        red, green = 255, 120
+        h = 0
+        if indice < 0:
+            green = 0
+        else:
+            while indice > h:
+                h += indice_total / (510 - 120)
+                if green == 255:
+                    red -= 1
+                else:
+                    green += 1
+
+        couleur = f'rgb({red},{green},0)'
+
+        # Dessin de la cellule Voronoï
+        folium.Polygon(
+            locations=poly_latlon,
+            color='black',
+            weight=1,
+            fill=True,
+            fill_color=couleur,
+            fill_opacity=0.4
+        ).add_to(m)
 
 
 # -------------------------

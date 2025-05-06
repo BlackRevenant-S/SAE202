@@ -68,27 +68,21 @@ for simplex in tri.simplices:
 for i, station in enumerate(stations_data):
     indice = indice_repartition(degrees[i], station['capacity'], 0.5)
 
+    # generation de la couleure en fonction de l'indice
     h = 0
     red = 255
     green = 120
-
     if indice < 0:
             red = 255
             green = 0
-
-
     else: 
         while indice > h:
             h = h + indice_total/(510 - 120)
-        
             if green == 255:
-           
                 red = red -1
-
             else:
                 green = green +1
         
-
     couleur = 'rgb('+str(red)+','+str(green)+',0)'
 
     folium.CircleMarker(
